@@ -2,8 +2,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
 
+    public static int MIN_SUM_FOR_DISCOUNT = 500; // 10% discount
+    public static boolean doDiscount;
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         Product[] products = {
@@ -33,15 +35,39 @@ public class Main {
             }
 
             String[] productIdAndCount = input.split(" ");
-            int productId = Integer.parseInt(productIdAndCount[0]);
-            int productCount = Integer.parseInt(productIdAndCount[1]);
 
+            if (productIdAndCount.length != 2) {
+                System.out.println("Ошибка ввода: не введён номер товара или его количество");
+                continue;
+            }
+
+            int productId;
+            int productCount;
+            try {
+                productId = Integer.parseInt(productIdAndCount[0]);
+                productCount = Integer.parseInt(productIdAndCount[1]);
+            } catch (NumberFormatException e) {
+                System.out.println("Неверный ввод. Введите целыми числами номер товара и его кол-во");
+                continue;
+            }
+
+            if (productId < 1 || productId > products.length) {
+                System.out.println("Неверный номер товара: " + productId);
+                continue;
+            }
+
+            if (productCount < 1) {
+                System.out.println("Некорректное кол-во товара: " + productCount);
+                continue;
+            }
             for (Product product : products) {
                 if (productId == product.getProductId()) {
                     product.setProductCount(product.getProductCount() + productCount);
                     shoppingCart += product.getProductCount() * product.getPrice();
                 }
             }
+            doDiscount = shoppingCart >= MIN_SUM_FOR_DISCOUNT;
+            shoppingCart = doDiscount ? shoppingCart - (shoppingCart * 10 / 100) : shoppingCart;
         }
     }
 }
